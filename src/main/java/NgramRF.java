@@ -94,14 +94,16 @@ public class NgramRF {
                 for (IntWritable val : values) {
                     ngramSum += val.get();
                 }
-                System.out.println(ngramFirstWord+": "+ngramSum);
+//                System.out.println(ngramFirstWord + ": " + ngramSum);
             } else {
 
                 int sum = 0;
                 for (IntWritable val : values) {
                     sum += val.get();
                 }
-                float rf =sum / ngramSum;
+                float rf = (float)sum / ngramSum;
+//                System.out.println(key.toString() + ": " + rf);
+
                 if (rf >= theta) {
                     result.set(rf);
                     context.write(key, result);
@@ -135,7 +137,7 @@ public class NgramRF {
         conf.setInt("N", Integer.parseInt(args[2]));
         conf.setFloat("theta", Float.parseFloat(args[3]));
 
-        Job job = Job.getInstance(conf, "ngram count");
+        Job job = Job.getInstance(conf, "ngram rf count");
         job.setJarByClass(NgramRF.class);
         job.setMapperClass(NgramRFMapper.class);
         job.setCombinerClass(NgramRFReducer.class);
@@ -143,10 +145,27 @@ public class NgramRF {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(IntWritable.class);
         job.setPartitionerClass(WordPartitioner.class);
+        job.setCombinerClass(NgramRFCombiner.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(FloatWritable.class);
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+
+    private static class NgramRFCombiner extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+        IntWritable sum=new IntWritable();
+
+        public void reduce(Text key, Iterable<IntWritable> values, Context context)
+                throws IOException, InterruptedException {
+            int count = 0;
+            for (IntWritable value : values) {
+                count += value.get();
+            }
+            sum.set(count);
+            context.write(key, sum);
+        }
+
     }
 }
