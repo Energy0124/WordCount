@@ -29,11 +29,11 @@ public class WordLengthCount {
                 wordLength.set(itr.nextToken().length());
                 if(inmemMap.containsKey(wordLength)){
                     count.set(inmemMap.get(wordLength).get() + 1);
-                    System.out.println(wordLength.get()+" : "+count.get());
+//                    System.out.println(wordLength.get()+" : "+count.get());
                     inmemMap.put(new IntWritable(wordLength.get()), new IntWritable(count.get()));
                 }else{
                     inmemMap.put(new IntWritable(wordLength.get()), new IntWritable(one.get()));
-                    System.out.println(wordLength.get()+" : "+1);
+//                    System.out.println(wordLength.get()+" : "+1);
                 }
             }
         }
@@ -44,7 +44,7 @@ public class WordLengthCount {
 
         protected void cleanup(Context context) throws IOException, InterruptedException {
             for (Map.Entry<IntWritable, IntWritable> entry : inmemMap.entrySet()) {
-                System.out.println(entry.getKey() + " : " + entry.getValue());
+//                System.out.println(entry.getKey() + " : " + entry.getValue());
                 context.write(entry.getKey(), entry.getValue());
             }
         }

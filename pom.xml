@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>energy0124</groupId>
-    <artifactId>WordLengthCount</artifactId>
+    <artifactId>WordCount</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <repositories>
