@@ -16,7 +16,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class WordLengthCount {
 
     public static class TokenizerMapper
-            extends Mapper<Object, Text, IntWritable, IntWritable>{
+            extends Mapper<Object, Text, IntWritable, IntWritable> {
 
         private final static IntWritable one = new IntWritable(1);
         private IntWritable count = new IntWritable(0);
@@ -27,11 +27,11 @@ public class WordLengthCount {
             StringTokenizer itr = new StringTokenizer(value.toString());
             while (itr.hasMoreTokens()) {
                 wordLength.set(itr.nextToken().length());
-                if(inmemMap.containsKey(wordLength)){
+                if (inmemMap.containsKey(wordLength)) {
                     count.set(inmemMap.get(wordLength).get() + 1);
 //                    System.out.println(wordLength.get()+" : "+count.get());
                     inmemMap.put(new IntWritable(wordLength.get()), new IntWritable(count.get()));
-                }else{
+                } else {
                     inmemMap.put(new IntWritable(wordLength.get()), new IntWritable(one.get()));
 //                    System.out.println(wordLength.get()+" : "+1);
                 }
@@ -39,7 +39,7 @@ public class WordLengthCount {
         }
 
         protected void setup(Mapper.Context context) throws IOException, InterruptedException {
-            inmemMap  = new HashMap<IntWritable, IntWritable>();
+            inmemMap = new HashMap<IntWritable, IntWritable>();
         }
 
         protected void cleanup(Context context) throws IOException, InterruptedException {
@@ -51,7 +51,7 @@ public class WordLengthCount {
     }
 
     public static class IntSumReducer
-            extends Reducer<IntWritable,IntWritable,IntWritable,IntWritable> {
+            extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable> {
         private IntWritable result = new IntWritable();
 
         public void reduce(IntWritable key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {

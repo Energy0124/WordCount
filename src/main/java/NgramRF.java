@@ -1,7 +1,6 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -71,8 +70,8 @@ public class NgramRF {
     }
 
     public static class NgramRFReducer
-            extends Reducer<Text, IntWritable, Text, FloatWritable> {
-        private FloatWritable result = new FloatWritable();
+            extends Reducer<Text, IntWritable, Text, DoubleWritable> {
+        private DoubleWritable result = new DoubleWritable();
         int ngramSum = 0;
         int n;
         float theta;
@@ -101,7 +100,7 @@ public class NgramRF {
                 for (IntWritable val : values) {
                     sum += val.get();
                 }
-                float rf = (float)sum / ngramSum;
+                float rf = (float) sum / ngramSum;
 //                System.out.println(key.toString() + ": " + rf);
 
                 if (rf >= theta) {
@@ -147,7 +146,7 @@ public class NgramRF {
         job.setPartitionerClass(WordPartitioner.class);
         job.setCombinerClass(NgramRFCombiner.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(FloatWritable.class);
+        job.setOutputValueClass(DoubleWritable.class);
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         System.exit(job.waitForCompletion(true) ? 0 : 1);
@@ -155,7 +154,7 @@ public class NgramRF {
 
     private static class NgramRFCombiner extends Reducer<Text, IntWritable, Text, IntWritable> {
 
-        IntWritable sum=new IntWritable();
+        IntWritable sum = new IntWritable();
 
         public void reduce(Text key, Iterable<IntWritable> values, Context context)
                 throws IOException, InterruptedException {
